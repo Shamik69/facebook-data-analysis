@@ -55,25 +55,25 @@ def demography(df: pd.DataFrame, plot: bool = True):
                 x_label='age', y_label='population',
                 title='Demographic', save_path=f'{path}/figs/demographic(scatter).jpeg'
         )
-    plt.show()
+    time.sleep(1)
+    plt.close()
+    demo.to_csv(f'{path}/processed data/demography.csv', index=False)
 
 
-def factors(df: pd.DataFrame, y_factor:str, plot: bool = True, measure: bool = True):
+def factors(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool = True):
     fc = []
-    x=[]
     m = df[df['gender'] == 'male']
     f = df[df['gender'] == 'female']
     for i in range(13, 114):
         if measure:
-            fc.append((i, m[m['age'] == i][y_factor].mean(), f[f['age'] == i][y_factor].mean()))
+            fc.append((i, round(m[m['age'] == i][y_factor].mean(), 2), round(f[f['age'] == i][y_factor].mean(), 2)))
         if not measure:
-            fc.append((i, m[m['age'] == i][y_factor].var(), f[f['age'] == i][y_factor].var()))
+            fc.append((i, round(m[m['age'] == i][y_factor].var(), 2), round(f[f['age'] == i][y_factor].var(), 2)))
     fc = pd.DataFrame(fc, columns=['age', 'male', 'female'])
     if measure:
-        info= f'{y_factor} (mean'
+        info = f'{y_factor} (mean'
     elif not measure:
-        info= f'{y_factor} (sd'
-
+        info = f'{y_factor} (sd'
     if plot:
         line_chart(
                 x_data=fc['age'], y1_data=fc['male'], y2_data=fc['female'],
@@ -90,13 +90,11 @@ def factors(df: pd.DataFrame, y_factor:str, plot: bool = True, measure: bool = T
         )
     time.sleep(1)
     plt.close()
+    fc.to_csv(f'{path}/processed data/{info}).csv', index=False)
 
 
-count=0
 for i in True, False:
+    demography(df, i)
     for col in list(df.columns[7:]):
         for x in True, False:
-            count+=1
             factors(df, col, i, x)
-            print(f'fig {count}')
-
