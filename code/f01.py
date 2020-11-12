@@ -119,7 +119,7 @@ def factors(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool = 
 
 
 for i in True, False:
-    # loop[ing for both line and scatter graph
+    # looping for both line and scatter graph
     demography(df, i)
     for col in list(df.columns[7:]):
         # loops for age and factor separation:
