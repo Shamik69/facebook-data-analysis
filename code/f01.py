@@ -74,6 +74,7 @@ def demography(df: pd.DataFrame, plot: bool = True):  # demographic distribution
 
 # interdependencies between age and other factors
 def factors(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool = True):
+    global info
     fc = []
 
     # separating the demographics
