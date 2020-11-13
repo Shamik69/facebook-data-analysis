@@ -73,7 +73,7 @@ def demography(df: pd.DataFrame, plot: bool = True):  # demographic distribution
 
 
 # interdependencies between age and other factors
-def factors(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool = True):
+def factors(df: pd.DataFrame, x_factor: str, y_factor: str, plot: bool = True, measure: bool = True):
     global info
     fc = []
 
@@ -86,30 +86,32 @@ def factors(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool = 
 
         # different methods for better data stitching
         if measure:
-            fc.append((i, round(m[m['age'] == i][y_factor].mean(), 2), round(f[f['age'] == i][y_factor].mean(), 2)))
+            fc.append((i, round(m[m[x_factor] == i][y_factor].mean(), 2),
+                       round(f[f[x_factor] == i][y_factor].mean(), 2)))
         if not measure:
-            fc.append((i, round(m[m['age'] == i][y_factor].var(), 2), round(f[f['age'] == i][y_factor].var(), 2)))
+            fc.append((i, round(m[m[x_factor] == i][y_factor].var(), 2),
+                       round(f[f[x_factor] == i][y_factor].var(), 2)))
     fc = pd.DataFrame(fc, columns=['age', 'male', 'female'])
 
     # label prep
     if measure:
-        info = f'{y_factor} (mean'
+        info = f'{x_factor} and {y_factor} (mean'
     elif not measure:
-        info = f'{y_factor} (sd'
+        info = f'{x_factor} and {y_factor} (sd'
 
     # plot prep
     if plot:
         line_chart(
-                x_data=fc['age'], y1_data=fc['male'], y2_data=fc['female'],
+                x_data=fc[x_factor], y1_data=fc['male'], y2_data=fc['female'],
                 y1_label='male', y2_label='female',
-                x_label='age', y_label=y_factor,
+                x_label=x_factor, y_label=y_factor,
                 title=f'{info})', save_path=f'{path}/figs/{info} plot).jpeg'
         )
     elif not plot:
         scatter_chart(
-                x_data=fc['age'], y1_data=fc['male'], y2_data=fc['female'],
+                x_data=fc[x_factor], y1_data=fc['male'], y2_data=fc['female'],
                 y1_label='male', y2_label='female',
-                x_label='age', y_label=y_factor,
+                x_label=x_factor, y_label=y_factor,
                 title=f'{info})', save_path=f'{path}/figs/{info} scatter).jpeg'
         )
 
@@ -119,10 +121,14 @@ def factors(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool = 
     fc.to_csv(f'{path}/processed data/{info}).csv', index=False)
 
 
-for i in True, False:
-    # looping for both line and scatter graph
-    demography(df, i)
-    for col in list(df.columns[7:]):
-        # loops for age and factor separation:
-        for x in True, False:
-            factors(df, col, i, x)
+def call():
+    for i in True, False:
+        # looping for both line and scatter graph
+        demography(df, i)
+        for col in list(df.columns[7:]):
+            # loops for age and factor separation:
+            for x in True, False:
+                factors(df=df, x_factor='age', y_factor=col, plot=i, measure=x)
+
+
+call()
