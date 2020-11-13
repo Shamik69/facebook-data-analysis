@@ -71,7 +71,6 @@ def main_fn01(df: pd.DataFrame, plot: bool = True):  # demographic distribution 
 
 # interdependencies between age and other factors
 def main_fn02(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool = True):
-    global info
     fc = []
 
     # separating the demographics
@@ -111,15 +110,18 @@ def main_fn02(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool 
 
 
 def main_fn03(df: pd.DataFrame, x_factor: str, y_factor: str, plot: bool = True):
+    info= f'{x_factor} and {y_factor})'
     sub_fn01(
             x_data=df[x_factor], y1_data=df[y_factor],
             x_label=x_factor, y1_label=y_factor,
             title=f'{x_factor} and {y_factor}',
             plot=plot, y_label=y_factor, save_path=f'{path}/figs',
-            info_text=f'{x_factor} and {y_factor})'
+            info_text=info
     )
     time.sleep(0.5)
     plt.close()
+    shitstain= df[[x_factor, y_factor]]
+    shitstain.to_csv(f'{path}/processed data/({info}).csv', index=False)
 
 
 def call(call_run: int):
