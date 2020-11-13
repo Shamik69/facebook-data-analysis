@@ -1,4 +1,4 @@
-# TODO: check interdependencies between friends, likes (received), mobile and www likes (received)
+# TODO: check interdependencies between friends(initiated), likes (received), mobile and www likes (received)
 # TODO: use reg for (to be) found interdependencies
 
 
@@ -14,31 +14,35 @@ t0 = time.time()
 df = pd.read_csv(f'{path}/data/pseudo_facebook.csv')
 
 
-def line_chart(y1_data, y2_data, x_data,
-               y1_label, y2_label, x_label,
-               y_label, title, save_path):
-    plt.plot(x_data, y1_data, label=y1_label)
-    plt.plot(x_data, y2_data, label=y2_label)
+# line and scatter plotting
+def sub_fn01(y1_data, x_data,
+             y1_label, x_label, y_label, title, save_path, info_text: str,
+             y2_data=None, y2_label=None, plot: bool = True):
+    if plot:
+        plt.plot(x_data, y1_data, label=y1_label)
+        if y2_data is not None:
+            plt.plot(x_data, y2_data, label=y2_label)
+        else:
+            pass
+        output = 'line'
+    elif not plot:
+        plt.scatter(x_data, y1_data, label=y1_label)
+        if y2_data is not None:
+            plt.scatter(x_data, y2_data, label=y2_label)
+        else:
+            pass
+        output = 'scatter'
     plt.xlabel(x_label)
-    plt.ylabel(y_label)
+    if y2_data is None:
+        plt.ylabel(y1_label)
+    else:
+        plt.ylabel(y_label)
     plt.title(title)
     plt.legend()
-    plt.savefig(save_path)
+    plt.savefig(f'{save_path}/{info_text}{output}).jpeg')
 
 
-def scatter_chart(y1_data, y2_data, x_data,
-                  y1_label, y2_label, x_label,
-                  y_label, title, save_path):
-    plt.scatter(x_data, y1_data, label=y1_label)
-    plt.scatter(x_data, y2_data, label=y2_label)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.title(title)
-    plt.legend()
-    plt.savefig(save_path)
-
-
-def demography(df: pd.DataFrame, plot: bool = True):  # demographic distribution of data
+def main_fn01(df: pd.DataFrame, plot: bool = True):  # demographic distribution of data
     demo = []
 
     # separating the demographics
@@ -49,20 +53,13 @@ def demography(df: pd.DataFrame, plot: bool = True):  # demographic distribution
     demo = pd.DataFrame(demo, columns=['age', 'male', 'female'])
 
     # scatter and line chart plotting
-    if plot:
-        line_chart(
-                x_data=demo['age'], y1_data=demo['male'], y2_data=demo['female'],
-                y1_label='male', y2_label='female',
-                x_label='age', y_label='population',
-                title='Demographic', save_path=f'{path}/figs/demographic(plot).jpeg'
-        )
-    elif not plot:
-        scatter_chart(
-                x_data=demo['age'], y1_data=demo['male'], y2_data=demo['female'],
-                y1_label='male', y2_label='female',
-                x_label='age', y_label='population',
-                title='Demographic', save_path=f'{path}/figs/demographic(scatter).jpeg'
-        )
+    sub_fn01(
+            x_data=demo['age'], y1_data=demo['male'], y2_data=demo['female'],
+            y1_label='male', y2_label='female',
+            x_label='age', y_label='population',
+            title='Demographic', save_path=f'{path}/figs',
+            plot=plot, info_text='demography'
+    )
     time.sleep(1)
 
     # plotting
@@ -73,7 +70,7 @@ def demography(df: pd.DataFrame, plot: bool = True):  # demographic distribution
 
 
 # interdependencies between age and other factors
-def factors(df: pd.DataFrame, x_factor: str, y_factor: str, plot: bool = True, measure: bool = True):
+def main_fn02(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool = True):
     global info
     fc = []
 
@@ -86,49 +83,59 @@ def factors(df: pd.DataFrame, x_factor: str, y_factor: str, plot: bool = True, m
 
         # different methods for better data stitching
         if measure:
-            fc.append((i, round(m[m[x_factor] == i][y_factor].mean(), 2),
-                       round(f[f[x_factor] == i][y_factor].mean(), 2)))
+            fc.append((i, round(m[m['age'] == i][y_factor].mean(), 2), round(f[f['age'] == i][y_factor].mean(), 2)))
         if not measure:
-            fc.append((i, round(m[m[x_factor] == i][y_factor].var(), 2),
-                       round(f[f[x_factor] == i][y_factor].var(), 2)))
+            fc.append((i, round(m[m['age'] == i][y_factor].var(), 2), round(f[f['age'] == i][y_factor].var(), 2)))
     fc = pd.DataFrame(fc, columns=['age', 'male', 'female'])
 
     # label prep
     if measure:
-        info = f'{x_factor} and {y_factor} (mean'
+        info = f'{y_factor} (mean'
     elif not measure:
-        info = f'{x_factor} and {y_factor} (sd'
+        info = f'{y_factor} (sd'
 
     # plot prep
-    if plot:
-        line_chart(
-                x_data=fc[x_factor], y1_data=fc['male'], y2_data=fc['female'],
-                y1_label='male', y2_label='female',
-                x_label=x_factor, y_label=y_factor,
-                title=f'{info})', save_path=f'{path}/figs/{info} plot).jpeg'
-        )
-    elif not plot:
-        scatter_chart(
-                x_data=fc[x_factor], y1_data=fc['male'], y2_data=fc['female'],
-                y1_label='male', y2_label='female',
-                x_label=x_factor, y_label=y_factor,
-                title=f'{info})', save_path=f'{path}/figs/{info} scatter).jpeg'
-        )
+    sub_fn01(
+            x_data=fc['age'], y1_data=fc['male'], y2_data=fc['female'],
+            y1_label='male', y2_label='female',
+            x_label='age', y_label='population',
+            title='Demographic', save_path=f'{path}/figs',
+            info_text=f'age and ({info})', plot=plot
+
+    )
 
     # plotting
     time.sleep(1)
     plt.close()
-    fc.to_csv(f'{path}/processed data/{info}).csv', index=False)
+    fc.to_csv(f'{path}/processed data/({info}).csv', index=False)
 
 
-def call():
+def main_fn03(df: pd.DataFrame, x_factor: str, y_factor: str, plot: bool = True):
+    sub_fn01(
+            x_data=df[x_factor], y1_data=df[y_factor],
+            x_label=x_factor, y1_label=y_factor,
+            title=f'{x_factor} and {y_factor}',
+            plot=plot, y_label=y_factor, save_path=f'{path}/figs',
+            info_text=f'{x_factor} and {y_factor})'
+    )
+    time.sleep(0.5)
+    plt.close()
+
+
+def call(call_run: int):
     for i in True, False:
         # looping for both line and scatter graph
-        demography(df, i)
-        for col in list(df.columns[7:]):
-            # loops for age and factor separation:
-            for x in True, False:
-                factors(df=df, x_factor='age', y_factor=col, plot=i, measure=x)
+        if call_run == 0:
+            main_fn01(df, i)
+        elif call_run == 1:
+            for col in list(df.columns[7:]):
+                # loops for age and factor separation:
+                for x in True, False:
+                    main_fn02(df, col, i, x)
+        elif call_run == 2:
+            for fuck in ['friend_count', 'friendships_initiated'], ['likes', 'likes_received'], \
+                        ['mobile_likes', 'www_likes']:
+                main_fn03(df=df, x_factor=fuck[0], y_factor=fuck[1], plot=i)
 
 
-call()
+call(2)
