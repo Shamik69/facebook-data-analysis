@@ -1,11 +1,11 @@
 # TODO: check interdependencies between friends(initiated), likes (received), mobile and www likes (received)
-# TODO: use reg for (to be) found interdependencies
 
 
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
 import seaborn as sns
+import statsmodels.api as sm
 
 sns.set()
 path = 'C:/Users/User/PycharmProjects/facebook'
@@ -144,5 +144,20 @@ def call(call_run: int):
                 main_fn03(df=df, x_factor=fuck[0], y_factor=fuck[1], plot=i)
 
 
-for i in range(3):
-    call(i)
+def reg():
+    demo = pd.read_csv(f'{path}/processed data/demography.csv')
+    y= demo['age']
+    x= sm.add_constant(demo[['male', 'female']])
+    model= sm.OLS(y, x).fit()
+    summary= model.summary()
+    html= summary.tables[1].as_html()
+    df= pd.read_html(html, header=0, index_col=0)[0]
+    x= list(df['coef'])
+    sign= ['+', '', '+']
+    for i in x:
+        if i<0:
+            sign[x.index(i)]= ''
+    return f'\ny= {sign[1]}{x[1]}x0{sign[2]}{x[2]}x1{sign[0]}{x[0]}'
+
+
+print(reg())
