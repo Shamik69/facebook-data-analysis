@@ -39,7 +39,8 @@ def sub_fn01(y1_data, x_data,
         plt.ylabel(y_label)
     plt.title(title)
     plt.legend()
-    plt.savefig(f'{save_path}/{info_text}{output}).jpeg')
+    plt.savefig(f'{save_path}/{info_text} {output}.jpeg')
+    print(f'filename: {save_path}/{info_text} {output}.jpeg\n')
 
 
 def main_fn01(df: pd.DataFrame, plot: bool = True):  # demographic distribution of data
@@ -60,13 +61,14 @@ def main_fn01(df: pd.DataFrame, plot: bool = True):  # demographic distribution 
             title='Demographic', save_path=f'{path}/figs',
             plot=plot, info_text='demography'
     )
-    time.sleep(1)
+    time.sleep(0.5)
 
     # plotting
     plt.close()
 
     # saving processed data
     demo.to_csv(f'{path}/processed data/demography.csv', index=False)
+    print(f'filename: {path}/processed data/demography.csv\n')
 
 
 # interdependencies between age and other factors
@@ -89,9 +91,9 @@ def main_fn02(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool 
 
     # label prep
     if measure:
-        info = f'{y_factor} (mean'
+        info = f'{y_factor} mean'
     elif not measure:
-        info = f'{y_factor} (sd'
+        info = f'{y_factor} sd'
 
     # plot prep
     sub_fn01(
@@ -99,18 +101,19 @@ def main_fn02(df: pd.DataFrame, y_factor: str, plot: bool = True, measure: bool 
             y1_label='male', y2_label='female',
             x_label='age', y_label='population',
             title='Demographic', save_path=f'{path}/figs',
-            info_text=f'age and ({info})', plot=plot
+            info_text=f'age and {info}', plot=plot
 
     )
 
     # plotting
     time.sleep(1)
     plt.close()
-    fc.to_csv(f'{path}/processed data/({info}).csv', index=False)
+    fc.to_csv(f'{path}/processed data/{info}.csv', index=False)
+    print(f'filename: {path}/processed data/{info}.csv\n')
 
 
 def main_fn03(df: pd.DataFrame, x_factor: str, y_factor: str, plot: bool = True):
-    info= f'{x_factor} and {y_factor})'
+    info= f'{x_factor} and {y_factor}'
     sub_fn01(
             x_data=df[x_factor], y1_data=df[y_factor],
             x_label=x_factor, y1_label=y_factor,
@@ -118,10 +121,11 @@ def main_fn03(df: pd.DataFrame, x_factor: str, y_factor: str, plot: bool = True)
             plot=plot, y_label=y_factor, save_path=f'{path}/figs',
             info_text=info
     )
-    time.sleep(0.5)
+    time.sleep(1)
     plt.close()
     shitstain= df[[x_factor, y_factor]]
-    shitstain.to_csv(f'{path}/processed data/({info}).csv', index=False)
+    shitstain.to_csv(f'{path}/processed data/{info}.csv', index=False)
+    print(f'filename: {path}/processed data/{info}.csv\n')
 
 
 def call(call_run: int):
@@ -140,4 +144,5 @@ def call(call_run: int):
                 main_fn03(df=df, x_factor=fuck[0], y_factor=fuck[1], plot=i)
 
 
-call(2)
+for i in range(3):
+    call(i)
