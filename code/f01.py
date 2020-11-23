@@ -159,9 +159,9 @@ def organizing():
         print(f'time: {time.time() - t1}\n'
               f'file: {file}')
     print(list0, '\n', dict0)
-    pd.Series(list0).to_csv(f'{path}/processed data/record0.csv', index=False)
-    pd.Series(list1).to_csv(f'{path}/processed data/record1.csv', index=False)
-    pd.DataFrame(dict0).to_csv(f'{path}/processed data/record2.csv', index=False)
+    pd.Series(list0).to_csv(f'{path}/record/record0.csv', index=False)
+    pd.Series(list1).to_csv(f'{path}/record/record1.csv', index=False)
+    pd.DataFrame(dict0).to_csv(f'{path}/record/record2.csv', index=False)
     print(f'\ntotal time: {time.time() - t0}')
 
 
@@ -184,7 +184,7 @@ def call(call_run: int):
                 eqns = []
                 x_data = []
                 y_data = []
-                for fname0 in pd.read_csv(f'{path}/processed data/record0.csv').to_numpy().tolist():
+                for fname0 in pd.read_csv(f'{path}/record/record0.csv').to_numpy().tolist():
                     file = f'{path}/processed data/{fname0[0]}'
                     for gender in 'male', 'female':
                         eqn0 = reg(
@@ -194,9 +194,9 @@ def call(call_run: int):
                         x_data.append(f'{fname0[0][:list(fname0[0]).index(".")]} age')
                         y_data.append(f'{fname0[0][:list(fname0[0]).index(".")]} {gender}')
 
-                for fname1 in pd.read_csv(f'{path}/processed data/record1.csv').to_numpy().tolist():
+                for fname1 in pd.read_csv(f'{path}/record/record1.csv').to_numpy().tolist():
                     file = f'{path}/processed data/{fname1[0]}'
-                    data = pd.read_csv(f'{path}/processed data/record2.csv')[fname1[0]].to_numpy().tolist()
+                    data = pd.read_csv(f'{path}/record/record2.csv')[fname1[0]].to_numpy().tolist()
                     eqn = reg(
                             df= pd.read_csv(file), x_data= data[0], y_data=data[1]
                     )
@@ -206,7 +206,9 @@ def call(call_run: int):
 
                 pd.DataFrame(
                         {'x': x_data, 'y': y_data, 'regression line': eqns}
-                ).to_csv(f'{path}/processed data/record3.csv', index= False)
+                ).to_csv(f'{path}/record/record3.csv', index= False)
 
 
+organizing()
+time.sleep(2)
 call(3)
