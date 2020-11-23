@@ -209,6 +209,4 @@ def call(call_run: int):
                 ).to_csv(f'{path}/record/record3.csv', index= False)
 
 
-organizing()
-time.sleep(2)
 call(3)
