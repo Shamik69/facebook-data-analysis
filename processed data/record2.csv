@@ -1,0 +1,3 @@
+friend_count and friendships_initiated.csv,likes and likes_received.csv,mobile_likes and www_likes.csv
+friend_count,likes,mobile_likes
+friendships_initiated,likes_received,www_likes
