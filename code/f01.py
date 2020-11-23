@@ -1,6 +1,3 @@
-# TODO: check interdependencies between friends(initiated), likes (received), mobile and www likes (received)
-
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import time, os
