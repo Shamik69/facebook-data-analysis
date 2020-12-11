@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="movies" />
     <orderEntry type="module" module-name="Project Tsukinome" />
+    <orderEntry type="module" module-name="term paper" />
   </component>
 </module>
